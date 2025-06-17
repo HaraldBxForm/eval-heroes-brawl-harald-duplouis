@@ -158,7 +158,7 @@ function displayChoiceImages() {
 // Fonction d'affichage des personnages dans l'arène
 function displayHeroesInArena() {
     heroesFightGallery.innerHTML = ``;
-
+    
         // Ici on utilse le hero et l'index en paramètre pour aller chercher précisément ce qu'on veut dans heroesList
         heroesList.forEach((hero, index) => {
             const newCard = document.createElement(`div`);
@@ -169,6 +169,11 @@ function displayHeroesInArena() {
             <div class="display-hero-strength">⚔️ ${hero.strength} ⚔️</div>`
             ;
             newCard.classList.add(`hero-card`);
+
+            // Ajoute une classe "dead" qui pemettra de rendre la carte semi-transparente en CSS si le personnage est mort
+            if (hero.isDead()) {
+              newCard.classList.add(`dead`);
+            }
             newCard.dataset.index = index;
 
             const newDiv = document.createElement(`div`);
@@ -245,14 +250,6 @@ heroesFightGallery.addEventListener(`click`, (e) => {
     // On utilise ces index dans la fonction attack de la classe Hero
     heroesList[heroIndex].attack(heroesList[targetIndex]);
 
-    if (heroesList[targetIndex].isDead()) {
-      console.log("Il est mort");
-      const card = e.target.closest(`.hero-card`);
-      if (card) {
-        card.classList.add(`dead`);
-      }
-      
-    }
     displayHeroesInArena();
   }
 });
