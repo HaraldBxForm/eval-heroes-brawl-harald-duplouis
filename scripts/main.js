@@ -160,20 +160,20 @@ function displayHeroesInArena() {
             heroesFightGallery.appendChild(newCard);
         })
 
-        const targetButtonsContainer = document.querySelector(`.target-buttons-container`);
+    const targetButtonsContainer = document.querySelector(`.target-buttons-container`);
 
-        targetButtonsContainer.innerHTML = ``;
+    targetButtonsContainer.innerHTML = ``;
 
-        heroesList.forEach((hero, index) => {
-            const newButton = document.createElement(`button`);
-            
-            newCard.innerHTML = ``
-            ;
-            newCard.classList.add(`"hero-card`);
-            newCard.dataset.index = index;
+    heroesList.forEach((hero, index) => {
+        const newButton = document.createElement(`button`);
+        
+        newButton.innerHTML = `${hero.name}`
+        ;
+        newButton.classList.add(`fight-button`);
+        newButton.dataset.index = index;
 
-            targetButtonsContainer.appendChild(newCard);
-        })
+        targetButtonsContainer.appendChild(newButton);
+    })
 }
 
 // ==============================
