@@ -28,31 +28,31 @@ class Hero {
       this.strength = ``,
       this.type = type,
       this.emoji = ``,
-      this.life = ``,
+      this.maxlife = ``,
       this.image = image
     }
     
+    // Fonction d'attaque avec un ckeck pour voir si le personnage est encore en vie. En paramètre, on met la cible
     attack(target) {
         if (this.isDead()) {return}
-        console.log(`⚔️ ${this.name} attaque ${target.name} !`);
         target.getDamages(this.strength);
       }
-
+    
+    // Fonction qui permet de vérifier si le joueur est toujours en vie
     isDead() {
         return this.life <= 0;
       }
 
+    // Fonction qui permet d'infliger des dégâtes avec la quantité de dégats en paramètre
     getDamages(dgts) {
     this.life -= dgts;
     if (this.life <= 0) {
         this.life = 0;
-        console.log(`💀 ${this.name} est tombé au combat ...`);
-    } else {
-        console.log(`❤️ ${this.name} a encore ${this.life} PV`);
     }
     }
   }
 
+// Classe spécifique qui hérite de Hero
 class Guerrier extends Hero {
     constructor(name, type, image) {
         super(name);
@@ -60,13 +60,14 @@ class Guerrier extends Hero {
         this.strength = 30,
         this.type = type,
         this.emoji = `🗡️`,
-        this.life = 100,
+        this.maxlife = 100,
         this.image = image
       }
 
       
 }
 
+// Classe spécifique qui hérite de Hero
 class Mage extends Hero {
     constructor(name, type, image) {
         super(name);
@@ -74,11 +75,22 @@ class Mage extends Hero {
         this.strength = 20,
         this.type = type,
         this.emoji = `🔮`,
-        this.life = 80,
+        this.maxlife = 80,
         this.image = image
+      }
+
+      attack(target) {
+        if (this.isDead()) {return}
+
+        target.getDamages(this.strength);
+
+        if (!this.isDead()) {
+          target.getDamages(5);
+        }
       }
 }
 
+// Classe spécifique qui hérite de Hero
 class Vampire extends Hero {
     constructor(name, type, image) {
         super(name);
@@ -86,20 +98,27 @@ class Vampire extends Hero {
         this.strength = 15,
         this.type = type,
         this.emoji = `🧛🏼‍♂️`,
-        this.life = 60,
+        this.maxlife = 60,
         this.image = image
+      }
+
+      attack(target) {
+        if (this.isDead()) {return}
+
+        target.getDamages(this.strength);
+        
+        if (!this.isDead()) {
+          target.getDamages(this.strength);
+        }
       }
 }
 
-// const Guerrier1 = new Guerrier(`Paul`, `Guerrier`, `test`);
-// const Vampire1 = new Vampire(`Jean`, `Vampire`, `test`);
-// console.log(Vampire1);
-// Guerrier1.attack(Vampire1);
-// console.log(Vampire1);
-
-// Fonction de création d'un personnage
+// Fonction de création d'un personnage.
+// Elle prend un index en paramètre afin de retrouver l'image selectionnée par l'utilisateur
 function createHero(index) {
-    if (!inputName.value.trim() || !inputType.type.trim()) {
+
+    // Vérification avant de créer un nouveau personnage
+    if (!inputName.value.trim() || !inputType.type.trim() || !index) {
         alert("Veuillez remplir tous les champs !");
         return;
     }
@@ -116,14 +135,13 @@ function createHero(index) {
         heroesList.push(new Vampire(inputName.value, inputType.value, imagesList[index]))
     }
 
-    // console.log(heroesList);
-    
 }
 
 // Fonction d'affichage du choix des images
 function displayChoiceImages() {
     imagesGallery.innerHTML = ``;
 
+        // ici l'index de chaque image sera récupéré en vue d'être réutilisé plus tard
         imagesList.forEach((image, index) => {
             const newImage = document.createElement(`div`);
             newImage.innerHTML = `<img src="${image}" alt="" data-index="${index}" class="image-element">`
@@ -141,56 +159,53 @@ function displayChoiceImages() {
 function displayHeroesInArena() {
     heroesFightGallery.innerHTML = ``;
 
+        // Ici on utilse le hero et l'index en paramètre pour aller chercher précisément ce qu'on veut dans heroesList
         heroesList.forEach((hero, index) => {
             const newCard = document.createElement(`div`);
             newCard.innerHTML = `
             <img src="${hero.image}" alt="" class="display-hero-image">
-            <div class="display-hero-name">${hero.name}</div>
-            <div class="health-level">
-            ${hero.life} ❤
-            </div>
-            <div class="display-hero-strength">${hero.strength}</div>
-            <div class="target-buttons-container">
-
-            </div>`
+            <div class="display-hero-name">${hero.emoji} ${hero.name}</div>
+            <div class="life"><div style="width:${((hero.life)/(hero.maxlife)*100)}%"></div></div>
+            <div class="display-hero-strength">⚔️ ${hero.strength} ⚔️</div>`
             ;
-            newCard.classList.add(`"hero-card`);
+            newCard.classList.add(`hero-card`);
             newCard.dataset.index = index;
 
+            const newDiv = document.createElement(`div`);
+
+            // Cette fois ci, on crée les boutons d'attaques et on récupère par la même occasion l'index qui nous permettra de retrouver la target
+            heroesList.forEach((hero, index) => {
+                newDiv.innerHTML += `<button data-index="${index}" class="attack-button">${hero.name}</button>`
+              }) 
+              
+            
             heroesFightGallery.appendChild(newCard);
+            newCard.appendChild(newDiv);
         })
 
-    const targetButtonsContainer = document.querySelector(`.target-buttons-container`);
-
-    targetButtonsContainer.innerHTML = ``;
-
-    heroesList.forEach((hero, index) => {
-        const newButton = document.createElement(`button`);
-        
-        newButton.innerHTML = `${hero.name}`
-        ;
-        newButton.classList.add(`fight-button`);
-        newButton.dataset.index = index;
-
-        targetButtonsContainer.appendChild(newButton);
-    })
+    
 }
 
 // ==============================
 // 🧲 Événements
 // ==============================
+
 displayChoiceImages();
 const imageElements = document.querySelectorAll(`.image-element`);
 let selectedIndex = null;
 
+// On capte la selection de l'utilsateur lorsque ce dernier clique sur une image
+// On va injecter et enlever une classe ".selected" pour récupérer l'index du coix de l'utilisateur 
 imagesGallery.addEventListener(`click`, (e) => {
   e.preventDefault();
   if (e.target.closest(`.list-image`)) {
 
+    // Retire par défaut toutes les classes ".selected"
     imageElements.forEach((element) => {
       element.classList.remove(`selected`);
     });
 
+    // Injection de la classe ".selected"
     e.target.classList.add(`selected`);
 
     if (e.target.matches(`.selected`)) {
@@ -200,12 +215,13 @@ imagesGallery.addEventListener(`click`, (e) => {
 }
 });
 
+// On capte l'évenement du clic sur le bouton d'ajout d'un personnage
 addButton.addEventListener(`click`, (e) => {
   e.preventDefault();
 
-  console.log(heroesList);
+  // Ici on crée un nouveau héro en prendant en paramètre l'index qu'on a extrait plus haut pour injecter la bonne image à chaque héro
   createHero(selectedIndex);
-  console.log(heroesList);
+
   displayHeroesInArena();
   
   imageElements.forEach((element) => {
@@ -213,4 +229,22 @@ addButton.addEventListener(`click`, (e) => {
     });
 
     selectedIndex = null;
+});
+
+// On capte l'évenement sur le bouton attaquer
+heroesFightGallery.addEventListener(`click`, (e) => {
+  e.preventDefault();
+  if (e.target.matches(`.attack-button`)) {
+
+    // On récupère l'index de la target
+    let targetIndex = e.target.closest(".attack-button").dataset.index;
+
+    // On récupère l'index de l'attaquant
+    let heroIndex = e.target.closest(`.hero-card`).dataset.index;
+
+    // On utilise ces index dans la fonction attack de la classe Hero
+    heroesList[heroIndex].attack(heroesList[targetIndex]);
+
+    displayHeroesInArena();
+  }
 });
