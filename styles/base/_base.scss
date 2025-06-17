@@ -4,7 +4,7 @@
 
 body {
   height: 100vh;
-  background: url("/img/freepik__the-style-is-pixel-art-with-a-retro-8bit-pixelated__1181.png") center/cover no-repeat fixed;
+  background: url("../img/freepik__the-style-is-pixel-art-with-a-retro-8bit-pixelated__1181.png") center/cover no-repeat fixed;
   color: white;
   font-family: 'Press Start 2P', monospace;
   font-size: 0.8rem;
@@ -80,7 +80,7 @@ h1, h2 {
 
     .hero-card {
         flex-basis: 20%;
-        background: url("/img/make-4-pixel-art-tiles-for-your-videogame.png") no-repeat center/cover;
+        background: url("../img/make-4-pixel-art-tiles-for-your-videogame.png") no-repeat center/cover;
         background-color: #3a2e2a;
         border: 2px solid #c2b280;
         border-radius: 15px;
@@ -198,3 +198,8 @@ input, select, textarea {
   .display-hero-strength {
     text-align: center;
   }
+
+
+.dead {
+    opacity: 50%;
+}

@@ -245,6 +245,14 @@ heroesFightGallery.addEventListener(`click`, (e) => {
     // On utilise ces index dans la fonction attack de la classe Hero
     heroesList[heroIndex].attack(heroesList[targetIndex]);
 
+    if (heroesList[targetIndex].isDead()) {
+      console.log("Il est mort");
+      const card = e.target.closest(`.hero-card`);
+      if (card) {
+        card.classList.add(`dead`);
+      }
+      
+    }
     displayHeroesInArena();
   }
 });
